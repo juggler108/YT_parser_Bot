@@ -1,1 +1,1 @@
-worker: python youtube_parser_bot.py
+web: python youtube_parser_bot.py

@@ -1,3 +1,6 @@
+import os
+
+import config
 from config import TOKEN
 from aiogram import Bot, types, utils
 from aiogram.dispatcher import Dispatcher
@@ -14,6 +17,19 @@ def searcher(text):
 
 bot = Bot(token=TOKEN)
 dp = Dispatcher(bot)
+
+
+async def on_startup(dp):
+    await bot.set_webhook(config.URL_APP)
+
+
+async def on_shutdown(dp):
+    await bot.delete_webhook()
+
+
+@dp.message_handler()
+async def start(message: types.Message):
+    await message.answer('Я умею только искать видео на YouTube')
 
 
 @dp.inline_handler()
@@ -33,4 +49,11 @@ async def inline_handler(query: types.InlineQuery):
     await query.answer(articles, cache_time=60, is_personal=True)
 
 
-executor.start_polling(dp, skip_updates=True)
+executor.start_webhook(
+    dispatcher=dp,
+    webhook_path='',
+    on_startup=on_startup,
+    on_shutdown=on_shutdown,
+    skip_updates=True,
+    host="0.0.0.0",
+    port=int(os.environ.get("PORT", 5000)))
