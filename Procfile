@@ -1,0 +1,1 @@
+worker: python youtube_parser_bot.py
