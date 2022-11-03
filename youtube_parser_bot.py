@@ -19,7 +19,6 @@ def searcher(text):
 base = ps.connect(os.environ.get('DATABASE_URL'), sslmode='require')
 cur = base.cursor()
 
-
 bot = Bot(token=TOKEN)
 dp = Dispatcher(bot)
 
@@ -80,3 +79,5 @@ executor.start_webhook(
     skip_updates=True,
     host="0.0.0.0",
     port=int(os.environ.get("PORT", 5000)))
+
+# executor.start_polling(dp, skip_updates=True)
