@@ -8,11 +8,16 @@ from aiogram.utils import executor
 from aiogram.types import InputTextMessageContent, InlineQueryResultArticle, InlineQuery, input_message_content
 from youtube_search import YoutubeSearch
 import hashlib
+import psycopg2 as ps
 
 
 def searcher(text):
     res = YoutubeSearch(text, max_results=10).to_dict()
     return res
+
+
+base = ps.connect(os.environ.get('DATABASE_URL'), sslmode='require')
+cur = base.cursor()
 
 
 bot = Bot(token=TOKEN)
@@ -25,6 +30,8 @@ async def on_startup(dp):
 
 async def on_shutdown(dp):
     await bot.delete_webhook()
+    cur.close()
+    base.close()
 
 
 @dp.message_handler()
@@ -47,6 +54,22 @@ async def inline_handler(query: types.InlineQuery):
     ) for link in links]
 
     await query.answer(articles, cache_time=60, is_personal=True)
+
+
+@dp.chosen_inline_handler()
+async def chosen(chosen_res: types.ChosenInlineResult):
+    text = chosen_res.query
+
+    cur.execute('SELECT search FROM searchyoutube WHERE search = %s', (text, ))
+    res = cur.fetchone()
+    print(res)
+
+    if not res:
+        cur.execute('INSERT INTO searchyoutube (search, count) VALUES (%s, %s)', (text, 1))
+        base.commit()
+    else:
+        cur.execute('UPDATE searchyoutube SET count = count + 1 WHERE search = %s', (text, ))
+        base.commit()
 
 
 executor.start_webhook(
