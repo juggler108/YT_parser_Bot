@@ -9,6 +9,7 @@ from aiogram.types import InputTextMessageContent, InlineQueryResultArticle, Inl
 from youtube_search import YoutubeSearch
 import hashlib
 import psycopg2 as ps
+from dotenv import load_dotenv, find_dotenv
 
 
 def searcher(text):
@@ -19,7 +20,8 @@ def searcher(text):
 base = ps.connect(os.environ.get('DATABASE_URL'), sslmode='require')
 cur = base.cursor()
 
-bot = Bot(token=TOKEN)
+load_dotenv(find_dotenv())
+bot = Bot(token=os.getenv(TOKEN))
 dp = Dispatcher(bot)
 
 
