@@ -21,7 +21,7 @@ base = ps.connect(os.environ.get('DATABASE_URL'), sslmode='require')
 cur = base.cursor()
 
 load_dotenv(find_dotenv())
-bot = Bot(token=os.getenv(TOKEN))
+bot = Bot(token=os.getenv('TOKEN'))
 dp = Dispatcher(bot)
 
 
