@@ -1,7 +1,7 @@
 import os
 
 import config
-from config import TOKEN
+# from config import TOKEN
 from aiogram import Bot, types, utils
 from aiogram.dispatcher import Dispatcher
 from aiogram.utils import executor
